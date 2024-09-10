@@ -2,7 +2,7 @@ name: learninglocker
 
 x-common: &common
   build: .
-  image: socialcomputing/learninglocker
+  image: ${IMAGE_NAME_PREFIX:-ghcr.io/ude-soco/}learninglocker:${IMAGE_TAG:-latest}
   restart: always
   depends_on:
     mongo:
