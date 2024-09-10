@@ -1,0 +1,15 @@
+version: '3'
+
+vars:
+  ADMIN_MAIL: '{{ .ADMIN_MAIL | default "admin@example.org" }}'
+  ADMIN_ORG:  '{{ .ADMIN_ORG  | default "example.org" }}'
+  ADMIN_PASS: '{{ .ADMIN_PASS | default "password123" }}'
+
+includes:
+  compose: Taskfile.compose.yaml
+
+tasks:
+  default:
+    cmds:
+    - task: compose:admin
+    - task: compose:watch

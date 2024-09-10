@@ -1,0 +1,31 @@
+version: '3'
+
+tasks:
+  build:
+    desc: Build the application
+    aliases: [ make ]
+    cmds: [ docker compose build ]
+
+  up:
+    desc: Run the application
+    aliases: [ run, start ]
+    cmds: [ docker compose up ]
+
+  down:
+    desc: Stop the application
+    aliases: [ halt, stop, end ]
+    cmds: [ docker compose down ]
+
+  watch:
+    desc: Run the application, watch for changes
+    aliases: [ dev ]
+    cmds: [ docker compose up --watch ]
+
+  admin:
+    desc: Create an admin user
+    cmds:
+    - docker compose run cli node cli/dist/server createSiteAdmin {{ .ADMIN_MAIL }} {{ .ADMIN_ORG }} {{ .ADMIN_PASS }}
+
+  clean:
+    desc: Stop the application and remove data
+    cmds: [ docker compose down --volumes ]
