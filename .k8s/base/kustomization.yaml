@@ -1,0 +1,58 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namePrefix: learninglocker-
+
+resources:
+- api
+- mongo
+- redis
+- ui
+- worker
+- xapi-service
+- ingress.yaml
+
+configMapGenerator:
+- name: learninglocker-ingress
+  literals:
+  - host=example.org
+- name: config
+  literals:
+  - LOG_MIN_LEVEL=warning
+  - QUEUE_PROVIDER=REDIS
+  - MONGO_DATABASE=learninglocker_v2
+  - UI_HOST=ui
+  - UI_PORT=3000
+  - API_HOST=api
+  - API_PORT=8080
+  - SITE_URL=http://127.0.0.1
+  - SMTP_HOST=""
+  - SMTP_PORT=""
+  - SMTP_SECURED=""
+  - SMTP_USER=""
+
+secretGenerator:
+- name: secret
+  literals:
+  - APP_SECRET="i-am-not-secure-please-change-me"
+  - SMTP_PASS=""
+
+images:
+- name: learninglocker
+  newName: ghcr.io/ude-soco/learninglocker
+  newTag: master
+- name: redis
+  newTag: '7'
+- name: mongo
+  newTag: '6.0'
+- name: xapi-service
+  newName: learninglocker/xapi-service
+
+vars:
+- name: LEARNINGLOCKER_FQDN
+  objref:
+    apiVersion: v1
+    kind: ConfigMap
+    name: learninglocker-ingress
+  fieldref:
+    fieldpath: data.host

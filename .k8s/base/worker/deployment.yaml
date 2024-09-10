@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker
+spec:
+  replicas: 1
+  template:
+    spec:
+      containers:
+      - name: worker
+        image: learninglocker
+        args:
+        - node
+        - worker/dist/server
+        envFrom:
+        - configMapRef:
+            name: config
+        - secretRef:
+            name: secret
+        env:
+        - name: REDIS_HOST
+          value: $(REDIS_SERVICE)
+        - name: MONGO_HOST
+          value: $(MONGO_SERVICE)
