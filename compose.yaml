@@ -92,6 +92,27 @@ services:
       start_period: 2s
       interval: 10s
 
+  xapi-service:
+    image: learninglocker/xapi-service
+    platform: linux/amd64
+    ports: [ "8081:8081" ]
+    depends_on:
+      mongo:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+    - xapi-service:/var/xapi-service
+    environment:
+      MODELS_REPO: mongo
+      MONGO_URL: mongodb://mongo:27017/learninglocker_v2
+      REDIS_URL: redis://redis:6379/0
+      EXPRESS_PORT: 8081
+      FS_LOCAL_STORAGE_DIR: /var/xapi-service
+      WINSTON_CONSOLE_LEVEL: error
+      XAPI_PREFIX: /data
+
 volumes:
   mongo:
   redis:
+  xapi-service:
