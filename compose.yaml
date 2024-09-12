@@ -74,6 +74,7 @@ services:
   mongo:
     image: mongo:6.0
     command: mongod --wiredTigerCacheSizeGB 0.25 --quiet --logpath /dev/null
+    ports: [ "27017:27017" ]
     volumes:
     - mongo:/data/db
     restart: always
@@ -85,6 +86,7 @@ services:
   redis:
     image: redis:7
     command: --loglevel warning
+    ports: [ "6379:6379" ]
     healthcheck:
       test: ["CMD", "redis-cli","ping"]
       start_period: 2s
