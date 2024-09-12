@@ -3,7 +3,6 @@ name: learninglocker
 x-common: &common
   build: .
   image: ${IMAGE_NAME_PREFIX:-ghcr.io/ude-soco/}learninglocker:${IMAGE_TAG:-latest}
-  restart: always
   depends_on:
     mongo:
       condition: service_healthy
@@ -77,7 +76,6 @@ services:
     ports: [ "27017:27017" ]
     volumes:
     - mongo:/data/db
-    restart: always
     healthcheck:
       test: "mongosh --nodb --eval 'disableTelemetry()'; echo 'db.runCommand({ping: 1}).ok' | mongosh localhost:27017/test --quiet"
       start_period: 2s
