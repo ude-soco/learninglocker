@@ -1,0 +1,9 @@
+#!/usr/bin/env sh
+
+MONGO_HOST="${MONGO_HOST:-localhost}"
+MONGO_PORT="${MONGO_PORT:-27017}"
+MONGO_DATABASE="${MONGO_DATABASE:-learninglocker_v2}"
+
+export MONGODB_PATH="mongodb://${MONGO_HOST}:${MONGO_PORT}/${MONGO_DATABASE}"
+
+exec "$@"
