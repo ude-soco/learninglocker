@@ -6,10 +6,11 @@ vars:
   ADMIN_PASS: '{{ .ADMIN_PASS | default "password123" }}'
 
 includes:
-  compose: Taskfile.compose.yaml
+  docker: Taskfile.docker.yaml
 
 tasks:
   default:
     cmds:
-    - task: compose:admin
-    - task: compose:watch
+    - task: docker:build
+    - task: docker:admin
+    - task: docker:watch

@@ -4,11 +4,11 @@ tasks:
   build:
     desc: Build the application
     aliases: [ make ]
-    cmds: [ docker compose build ]
+    cmds: [ docker buildx bake ]
 
   rebuild:
     desc: Rebuild the applications without caches
-    cmds: [ docker compose build --no-cache ]
+    cmds: [ docker buildx bake --no-cache ]
 
   up:
     desc: Run the application
@@ -33,3 +33,11 @@ tasks:
   clean:
     desc: Stop the application and remove data
     cmds: [ docker compose down --volumes ]
+
+  check:
+    - task: docker build --check .
+    - task: docker scout quickview
+
+  kompose:
+    cmds:
+    - kompose convert --with-kompose-annotation=false --out=./.k8s/base

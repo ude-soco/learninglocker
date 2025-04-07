@@ -1,26 +1,27 @@
-# syntax=docker/dockerfile:1.6
-FROM node:10-stretch as build
+# syntax=docker/dockerfile:1.8
+
+FROM node:10-stretch AS build
 WORKDIR /opt/learninglocker
 
-ADD package.json .yarnrc yarn.lock .
-RUN --mount=type=cache,target=/usr/local/share/.cache/yarn,rw <<EOF
+ADD package.json .yarnrc yarn.lock ./
+RUN --mount=type=cache,target=/usr/local/share/.cache/yarn,rw,sharing=locked <<EOF
   yarn upgrade @google-cloud/pubsub@0.32.1 --ignore-engines
   yarn install --ignore-engines --ignore-platform
 EOF
 
 ADD . .
-RUN --mount=type=cache,target=/usr/local/share/.cache/yarn,rw <<EOF
+RUN --mount=type=cache,target=/usr/local/share/.cache/yarn,rw,sharing=locked <<EOF
   touch .env
   yarn build-all
 EOF
 
 
-FROM node:10-stretch-slim as runtime
+FROM node:10-stretch-slim AS runtime
 WORKDIR /opt/learninglocker
-ENV NODE_ENV production
+ENV NODE_ENV=production
 RUN touch .env
-ADD package.json .yarnrc yarn.lock .
-RUN --mount=type=cache,target=/usr/local/share/.cache/yarn,rw <<EOF
+ADD package.json .yarnrc yarn.lock ./
+RUN --mount=type=cache,target=/usr/local/share/.cache/yarn,rw,sharing=locked <<EOF
   yarn upgrade @google-cloud/pubsub@0.32.1 --ignore-engines
   yarn install --ignore-engines --ignore-platform --only=production
 EOF
