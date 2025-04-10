@@ -1,5 +1,5 @@
-import { createSiteAdmin } from "../cli/src/commands/createSiteAdmin.js";
-import mongoose from "mongoose";
+const { createSiteAdmin } = require("../cli/src/commands/createSiteAdmin");
+const mongoose = require("mongoose");
 
 const email = process.env.LL_ADMIN_EMAIL;
 const organisationName = process.env.LL_ADMIN_ORG;
