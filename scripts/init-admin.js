@@ -7,7 +7,7 @@ const password = process.env.LL_ADMIN_PASSWORD;
 
 if (!email || !organisationName || !password) {
   console.error(
-    "Missing required environment variables: SITE_ADMIN_EMAIL, SITE_ADMIN_ORG_NAME, SITE_ADMIN_PASSWORD"
+    "Missing required environment variables: LL_ADMIN_EMAIL, LL_ADMIN_ORG, LL_ADMIN_PASSWORD"
   );
   process.exit(1);
 }
