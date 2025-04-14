@@ -21,7 +21,9 @@ app.use(bodyParser.json({ limit: '5mb' }));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(passport.initialize());
-app.use(HttpRoutes);
+
+const pathPrefix = process.env.PATH_PREFIX || ''; /* use leading slash */
+app.use(pathPrefix, HttpRoutes);
 
 if (process.env.API_PORT) {
   app.listen(process.env.API_PORT, (err) => {
@@ -32,7 +34,7 @@ if (process.env.API_PORT) {
       '\n --- \n',
       `==> 🌎  API is running on port ${process.env.API_PORT}`,
       '\n',
-      `==> 💻  Send requests to http://${process.env.API_HOST}:${process.env.API_PORT}`,
+      `==> 💻  Send requests to http://${process.env.API_HOST}:${process.env.API_PORT}${pathPrefix}/`,
       '\n',
       '--- \n'
     );
