@@ -1,5 +1,5 @@
-const { createSiteAdmin } = require("../cli/src/commands/createSiteAdmin");
-const mongoose = require("mongoose");
+import { createSiteAdmin } from "../cli/src/commands/createSiteAdmin";
+import { connect, disconnect } from "mongoose";
 
 const email = process.env.LL_ADMIN_EMAIL;
 const organisationName = process.env.LL_ADMIN_ORG;
@@ -18,8 +18,8 @@ const options = {
 
 const run = async () => {
   try {
-    await mongoose.connect(
-      `mongodb://${process.env.MONGO_HOST}:27017/${process.env.MONGO_DATABASE}`
+    await connect(
+      `mongodb://${process.env.MONGO_HOST}:${process.env.MONGO_PORT}/${process.env.MONGO_DATABASE}`
     );
     await createSiteAdmin(email, organisationName, password, options);
     console.log("Admin user created or already exists.");
@@ -27,7 +27,7 @@ const run = async () => {
     console.error("Failed to create admin user:", err);
     process.exit(1);
   } finally {
-    await mongoose.disconnect();
+    await disconnect();
     process.exit(0);
   }
 };

@@ -25,6 +25,11 @@ tasks:
     aliases: [ dev ]
     cmds: [ docker compose up --watch ]
 
+  cli:
+    desc: Start shell in cli container
+    cmds:
+    - docker compose run cli
+
   admin:
     desc: Create an admin user
     cmds:
