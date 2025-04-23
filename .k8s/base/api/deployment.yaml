@@ -10,8 +10,7 @@ spec:
       - name: api
         image: learninglocker
         args:
-        - node
-        - api/dist/server
+        - api
         envFrom:
         - configMapRef:
             name: config

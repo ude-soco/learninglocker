@@ -10,8 +10,7 @@ spec:
       - name: ui
         image: learninglocker
         args:
-        - node
-        - ui/dist/server
+        - ui
         envFrom:
         - configMapRef:
             name: config

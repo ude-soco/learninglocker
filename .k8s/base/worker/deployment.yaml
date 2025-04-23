@@ -10,8 +10,7 @@ spec:
       - name: worker
         image: learninglocker
         args:
-        - node
-        - worker/dist/server
+        - worker
         envFrom:
         - configMapRef:
             name: config
