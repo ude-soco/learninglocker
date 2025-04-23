@@ -37,8 +37,10 @@ x-common: &common
 services:
   api:
     <<: *common
-    command: [ "node", "api/dist/server" ]
+    command: api
     ports: [ "8080:8080" ]
+    depends_on:
+    - mongo
     develop:
       watch:
       - path: /api
@@ -46,7 +48,7 @@ services:
 
   ui:
     <<: *common
-    command: [ "node", "ui/dist/server" ]
+    command: ui
     ports: [ "3000:3000" ]
     develop:
       watch:
@@ -55,7 +57,9 @@ services:
 
   worker:
     <<: *common
-    command: [ "node", "worker/dist/server" ]
+    command: worker
+    depends_on:
+    - mongo
     develop:
       watch:
       - path: /worker
@@ -64,12 +68,13 @@ services:
   cli:
     <<: *common
     profiles: [ halted ]
+    command: bash
+    depends_on:
+    - mongo
     develop:
       watch:
       - path: /cli
         action: rebuild
-    depends_on:
-    - mongo
 
   mongo:
     image: mongo:6.0
