@@ -1,3 +1,4 @@
 #!/usr/bin/env sh
 
+echo "Starting API ..."
 exec node api/dist/server

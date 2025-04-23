@@ -1,3 +1,4 @@
 #!/usr/bin/env sh
 
+echo "Starting UI ..."
 exec node ui/dist/server
