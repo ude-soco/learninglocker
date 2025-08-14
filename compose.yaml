@@ -37,6 +37,7 @@ x-common: &common
 services:
   api:
     <<: *common
+    build: .
     command: api
     ports: [ "8080:8080" ]
     depends_on:
@@ -67,8 +68,10 @@ services:
 
   cli:
     <<: *common
-    profiles: [ halted ]
-    command: bash
+    profiles: [halted]
+    command: >
+      bash -c "yarn migrate &&
+             node cli/dist/server createSiteAdmin"
     depends_on:
     - mongo
     develop:
