@@ -33,6 +33,5 @@ COPY --from=build /opt/learninglocker/cli/dist ./cli/dist
 COPY --from=build /opt/learninglocker/ui/dist ./ui/dist
 COPY --from=build /opt/learninglocker/worker/dist ./worker/dist
 COPY lib/templates/emails ./lib/templates/emails
-COPY scripts ./scripts
 COPY bin ./bin
 ENTRYPOINT [ "bin/entrypoint" ]

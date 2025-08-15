@@ -6,8 +6,10 @@ x-common: &common
   depends_on:
     mongo:
       condition: service_healthy
+      restart: true
     redis:
       condition: service_healthy
+      restart: true
   develop:
     watch:
     - path: package.json
@@ -33,34 +35,38 @@ x-common: &common
     # SMTP_USER
     # SMTP_PASS
     APP_SECRET: "i-am-not-secure-please-change-me"
+    LL_ADMIN_EMAIL: "admin@mail.com"
+    LL_ADMIN_ORG: "soco"
+    LL_ADMIN_PASSWORD: "1234qweR"
 
 services:
-  api:
-    <<: *common
-    build: .
-    command: api
-    ports: [ "8080:8080" ]
-    depends_on:
-    - mongo
-    develop:
-      watch:
-      - path: /api
-        action: rebuild
-
   ui:
     <<: *common
     command: ui
-    ports: [ "3000:3000" ]
+    ports:
+    - "3000:3000"
+    depends_on:
+    - api
     develop:
       watch:
       - path: /ui
         action: rebuild
 
+  api:
+    <<: *common
+    command: api
+    ports: [ "8080:8080" ]
+    depends_on:
+      fixtures:
+        condition: service_completed_successfully
+    develop:
+      watch:
+      - path: /api
+        action: rebuild
+
   worker:
     <<: *common
     command: worker
-    depends_on:
-    - mongo
     develop:
       watch:
       - path: /worker
@@ -69,15 +75,27 @@ services:
   cli:
     <<: *common
     profiles: [halted]
-    command: >
-      bash -c "yarn migrate &&
-             node cli/dist/server createSiteAdmin"
+    command: bash
     depends_on:
-    - mongo
+      fixtures:
+        condition: service_completed_successfully
     develop:
       watch:
       - path: /cli
         action: rebuild
+
+  fixtures:
+    <<: *common
+    command: fixtures
+    depends_on:
+      migrations:
+        condition: service_completed_successfully
+    restart: on-failure
+
+  migrations:
+    <<: *common
+    command: yarn migrate
+    restart: on-failure
 
   mongo:
     image: mongo:6.0

@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+
+echo "Setting up admin account ..."
+node cli/dist/server createSiteAdmin ${LL_ADMIN_EMAIL:?} ${LL_ADMIN_ORG:?} ${LL_ADMIN_PASSWORD:?}

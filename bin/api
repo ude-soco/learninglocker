@@ -1,7 +1,4 @@
 #!/usr/bin/env sh
 
-echo "Configuring admin account ..."
-node scripts/init-admin.js
-
 echo "Starting API ..."
 exec node api/dist/server
