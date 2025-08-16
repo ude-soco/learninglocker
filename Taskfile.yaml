@@ -12,5 +12,4 @@ tasks:
   default:
     cmds:
     - task: docker:build
-    - task: docker:admin
     - task: docker:watch

@@ -3,13 +3,6 @@ name: learninglocker
 x-common: &common
   build: .
   image: ${IMAGE_NAME_PREFIX:-ghcr.io/ude-soco/}learninglocker:${IMAGE_TAG:-latest}
-  depends_on:
-    mongo:
-      condition: service_healthy
-      restart: true
-    redis:
-      condition: service_healthy
-      restart: true
   develop:
     watch:
     - path: package.json
@@ -57,8 +50,14 @@ services:
     command: api
     ports: [ "8080:8080" ]
     depends_on:
+      mongo:
+        condition: service_healthy
+        restart: true
       seeds:
         condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+        restart: true
     develop:
       watch:
       - path: /api
@@ -67,6 +66,13 @@ services:
   worker:
     <<: *common
     command: worker
+    depends_on:
+      mongo:
+        condition: service_healthy
+        restart: true
+      redis:
+        condition: service_healthy
+        restart: true
     develop:
       watch:
       - path: /worker
@@ -75,10 +81,8 @@ services:
   cli:
     <<: *common
     profiles: [halted]
-    command: bash
-    depends_on:
-      seeds:
-        condition: service_completed_successfully
+    command: cli
+    tty: true
     develop:
       watch:
       - path: /cli
@@ -94,7 +98,11 @@ services:
 
   migrations:
     <<: *common
-    command: yarn migrate
+    command: migrations
+    depends_on:
+      mongo:
+        condition: service_healthy
+        restart: true
     restart: on-failure
 
   mongo:
