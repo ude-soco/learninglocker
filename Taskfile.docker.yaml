@@ -10,7 +10,6 @@ tasks:
     aliases: [ default ]
     cmds:
     - task: build
-    - task: admin
     - task: watch
 
   build:
