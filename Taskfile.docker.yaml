@@ -1,38 +1,49 @@
 version: '3'
 
+env:
+  COMPOSE_DOCKER_CLI_BUILD: "1"
+  DOCKER_BUILDKIT: "1"
+  COMPOSE_CMD: docker compose
+
 tasks:
+  all:
+    aliases: [ default ]
+    cmds:
+    - task: build
+    - task: admin
+    - task: watch
+
   build:
     desc: Build the application
     aliases: [ make ]
-    cmds: [ docker buildx bake ]
+    cmds: [ $COMPOSE_CMD build ]
 
   rebuild:
     desc: Rebuild the applications without caches
-    cmds: [ docker buildx bake --no-cache ]
+    cmds: [ $COMPOSE_CMD build --no-cache ]
 
   up:
     desc: Run the application
     aliases: [ run, start ]
-    cmds: [ docker compose up ]
+    cmds: [ $COMPOSE_CMD up ]
 
   down:
     desc: Stop the application
     aliases: [ halt, stop, end ]
-    cmds: [ docker compose down ]
+    cmds: [ $COMPOSE_CMD down ]
 
   watch:
     desc: Run the application, watch for changes
     aliases: [ dev ]
-    cmds: [ docker compose up --watch ]
+    cmds: [ $COMPOSE_CMD up --watch ]
 
   cli:
     desc: Start shell in cli container
-    cmds:
-    - docker compose run cli
+    cmds: [ $COMPOSE_CMD run cli ]
 
   clean:
     desc: Stop the application and remove data
-    cmds: [ docker compose down --volumes ]
+    cmds: [ $COMPOSE_CMD down --volumes ]
 
   check:
     - task: docker build --check .
