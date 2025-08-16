@@ -104,7 +104,7 @@ services:
     volumes:
     - mongo:/data/db
     healthcheck:
-      test: "mongosh --nodb --eval 'disableTelemetry()'; echo 'db.runCommand({ping: 1}).ok' | mongosh localhost:27017/test --quiet"
+      test: "mongo --nodb --eval 'disableTelemetry()'; echo 'db.runCommand({ping: 1}).ok' | mongo localhost:27017/test --quiet"
       start_period: 2s
       interval: 10s
 
