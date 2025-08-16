@@ -57,7 +57,7 @@ services:
     command: api
     ports: [ "8080:8080" ]
     depends_on:
-      fixtures:
+      seeds:
         condition: service_completed_successfully
     develop:
       watch:
@@ -77,16 +77,16 @@ services:
     profiles: [halted]
     command: bash
     depends_on:
-      fixtures:
+      seeds:
         condition: service_completed_successfully
     develop:
       watch:
       - path: /cli
         action: rebuild
 
-  fixtures:
+  seeds:
     <<: *common
-    command: fixtures
+    command: seeds
     depends_on:
       migrations:
         condition: service_completed_successfully
