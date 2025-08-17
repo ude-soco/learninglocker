@@ -1,4 +1,5 @@
 #!/usr/bin/env sh
+set -eu
 
 echo "Executing database migrations ..."
 node cli/dist/server migrateMongo --up

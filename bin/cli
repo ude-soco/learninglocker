@@ -1,4 +1,5 @@
 #!/usr/bin/env sh
+set -eu
 
 echo "Starting CLI ..."
 exec node cli/dist/server
