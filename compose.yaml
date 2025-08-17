@@ -3,11 +3,6 @@ name: learninglocker
 x-common: &common
   build: .
   image: ${IMAGE_NAME_PREFIX:-ghcr.io/ude-soco/}learninglocker:${IMAGE_TAG:-latest}
-  depends_on:
-    mongo:
-      condition: service_healthy
-    redis:
-      condition: service_healthy
   develop:
     watch:
     - path: package.json
@@ -33,33 +28,55 @@ x-common: &common
     # SMTP_USER
     # SMTP_PASS
     APP_SECRET: "i-am-not-secure-please-change-me"
+    LL_ADMIN_EMAIL: "admin@mail.com"
+    LL_ADMIN_ORG: "soco"
+    LL_ADMIN_PASSWORD: "1234qweR"
 
 services:
-  api:
-    <<: *common
-    command: api
-    ports: [ "8080:8080" ]
-    depends_on:
-    - mongo
-    develop:
-      watch:
-      - path: /api
-        action: rebuild
-
   ui:
     <<: *common
     command: ui
-    ports: [ "3000:3000" ]
+    ports: ["3000:3000"]
+    depends_on:
+      api:
+        condition: service_healthy
     develop:
       watch:
       - path: /ui
+        action: rebuild
+
+  api:
+    <<: *common
+    command: api
+    ports: ["8080:8080"]
+    healthcheck:
+      test: [CMD, node, -e, "'fetch(`http://localhost:8080/`).then(x=>x.status==200?process.exit(0):process.exit(1)).catch(()=>process.exit(1))'"]
+      start_period: 10s
+      interval: 10s
+    depends_on:
+      mongo:
+        condition: service_healthy
+        restart: true
+      seeds:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+        restart: true
+    develop:
+      watch:
+      - path: /api
         action: rebuild
 
   worker:
     <<: *common
     command: worker
     depends_on:
-    - mongo
+      mongo:
+        condition: service_healthy
+        restart: true
+      redis:
+        condition: service_healthy
+        restart: true
     develop:
       watch:
       - path: /worker
@@ -67,23 +84,39 @@ services:
 
   cli:
     <<: *common
-    profiles: [ halted ]
-    command: bash
-    depends_on:
-    - mongo
+    profiles: [halted]
+    command: cli
+    tty: true
     develop:
       watch:
       - path: /cli
         action: rebuild
 
+  seeds:
+    <<: *common
+    command: seeds
+    depends_on:
+      migrations:
+        condition: service_completed_successfully
+    restart: on-failure
+
+  migrations:
+    <<: *common
+    command: migrations
+    depends_on:
+      mongo:
+        condition: service_healthy
+        restart: true
+    restart: on-failure
+
   mongo:
-    image: mongo:6.0
+    image: mongo:4.4
     command: mongod --wiredTigerCacheSizeGB 0.25 --quiet --logpath /dev/null
-    ports: [ "27017:27017" ]
+    ports: ["27017:27017"]
     volumes:
     - mongo:/data/db
     healthcheck:
-      test: "mongosh --nodb --eval 'disableTelemetry()'; echo 'db.runCommand({ping: 1}).ok' | mongosh localhost:27017/test --quiet"
+      test: "mongo --nodb --eval 'disableTelemetry()'; echo 'db.runCommand({ping: 1}).ok' | mongo localhost:27017/test --quiet"
       start_period: 2s
       interval: 10s
 
@@ -92,16 +125,16 @@ services:
     command: --loglevel warning
     volumes:
     - redis:/data
-    ports: [ "6379:6379" ]
+    ports: ["6379:6379"]
     healthcheck:
-      test: ["CMD", "redis-cli","ping"]
+      test: ["CMD", "redis-cli", "ping"]
       start_period: 2s
       interval: 10s
 
   xapi-service:
     image: learninglocker/xapi-service
     platform: linux/amd64
-    ports: [ "8081:8081" ]
+    ports: ["8081:8081"]
     depends_on:
       mongo:
         condition: service_healthy

@@ -1,0 +1,5 @@
+#!/usr/bin/env sh
+set -eu
+
+echo "Setting up seed data ..."
+node cli/dist/server createSiteAdmin "${LL_ADMIN_EMAIL:?}" "${LL_ADMIN_ORG:?}" "${LL_ADMIN_PASSWORD:?}"

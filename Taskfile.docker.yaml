@@ -10,7 +10,6 @@ tasks:
     aliases: [ default ]
     cmds:
     - task: build
-    - task: admin
     - task: watch
 
   build:
@@ -39,13 +38,7 @@ tasks:
 
   cli:
     desc: Start shell in cli container
-    cmds:
-    - $COMPOSE_CMD run cli
-
-  admin:
-    desc: Create an admin user
-    cmds:
-    - $COMPOSE_CMD run cli node cli/dist/server createSiteAdmin {{ .ADMIN_MAIL }} {{ .ADMIN_ORG }} {{ .ADMIN_PASS }}
+    cmds: [ $COMPOSE_CMD run cli ]
 
   clean:
     desc: Stop the application and remove data
