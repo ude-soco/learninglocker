@@ -1,9 +1,9 @@
 #!/usr/bin/env sh
 set -eu
 
-MONGO_HOST="${MONGO_HOST:-localhost}"
-MONGO_PORT="${MONGO_PORT:-27017}"
-MONGO_DATABASE="${MONGO_DATABASE:-learninglocker_v2}"
+MONGO_HOST="${MONGO_HOST:?MONGO_HOST missing}"
+MONGO_PORT="${MONGO_PORT:?MONGO_PORT missing}"
+MONGO_DATABASE="${MONGO_DATABASE:?MONGO_DATABASE missing}"
 export MONGODB_PATH="mongodb://${MONGO_HOST}:${MONGO_PORT}/${MONGO_DATABASE}"
 
 export PATH=./bin:$PATH
