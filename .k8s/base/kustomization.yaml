@@ -16,6 +16,7 @@ configMapGenerator:
 - name: learninglocker-ingress
   literals:
   - host=example.org
+
 - name: config
   literals:
   - LOG_MIN_LEVEL=warning
@@ -30,12 +31,15 @@ configMapGenerator:
   - SMTP_PORT=""
   - SMTP_SECURED=""
   - SMTP_USER=""
+  - LL_ADMIN_EMAIL=""
+  - LL_ADMIN_ORG=""
 
 secretGenerator:
 - name: secret
   literals:
   - APP_SECRET="i-am-not-secure-please-change-me"
   - SMTP_PASS=""
+  - LL_ADMIN_PASSWORD=""
 
 images:
 - name: learninglocker
@@ -44,7 +48,7 @@ images:
 - name: redis
   newTag: '7'
 - name: mongo
-  newTag: '6.0'
+  newTag: '4.4'
 - name: xapi-service
   newName: learninglocker/xapi-service
 
