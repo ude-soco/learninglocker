@@ -15,6 +15,9 @@ spec:
             name: config
         - secretRef:
             name: secret
+        env:
+        - name: MONGO_HOST
+          value: $(MONGO_SERVICE)
 
       - name: seeds
         image: learninglocker
@@ -24,12 +27,14 @@ spec:
             name: config
         - secretRef:
             name: secret
+        env:
+        - name: MONGO_HOST
+          value: $(MONGO_SERVICE)
 
       containers:
       - name: api
         image: learninglocker
-        args:
-        - api
+        args: [api]
         envFrom:
         - configMapRef:
             name: config
