@@ -3,7 +3,7 @@ kind: Kustomization
 
 labels:
 - pairs:
-    app.kubernetes.io/name: xapi-service
+    app.kubernetes.io/component: xapi-service
   includeSelectors: true
   includeTemplates: true
 

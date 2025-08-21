@@ -18,6 +18,6 @@ spec:
             name: secret
         env:
         - name: REDIS_HOST
-          value: $(REDIS_SERVICE)
+          value: $(LEARNINGLOCKER_REDIS_SERVICE)
         - name: MONGO_HOST
-          value: $(MONGO_SERVICE)
+          value: $(LEARNINGLOCKER_MONGO_SERVICE)

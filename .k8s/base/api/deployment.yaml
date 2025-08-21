@@ -17,7 +17,7 @@ spec:
             name: secret
         env:
         - name: MONGO_HOST
-          value: $(MONGO_SERVICE)
+          value: $(LEARNINGLOCKER_MONGO_SERVICE)
 
       - name: seeds
         image: learninglocker
@@ -29,7 +29,7 @@ spec:
             name: secret
         env:
         - name: MONGO_HOST
-          value: $(MONGO_SERVICE)
+          value: $(LEARNINGLOCKER_MONGO_SERVICE)
 
       containers:
       - name: api
@@ -44,9 +44,9 @@ spec:
         - name: PATH_PREFIX
           value: "/api"
         - name: REDIS_HOST
-          value: $(REDIS_SERVICE)
+          value: $(LEARNINGLOCKER_REDIS_SERVICE)
         - name: MONGO_HOST
-          value: $(MONGO_SERVICE)
+          value: $(LEARNINGLOCKER_MONGO_SERVICE)
         ports:
         - containerPort: 8080
           protocol: TCP
@@ -54,5 +54,6 @@ spec:
           httpGet:
             path: /
             port: 8080
-          initialDelaySeconds: 15
-          periodSeconds: 30
+          initialDelaySeconds: 5
+          periodSeconds: 15
+          timeoutSeconds: 3

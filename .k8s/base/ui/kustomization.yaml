@@ -3,7 +3,7 @@ kind: Kustomization
 
 labels:
 - pairs:
-    app.kubernetes.io/name: ui
+    app.kubernetes.io/component: ui
   includeSelectors: true
   includeTemplates: true
 

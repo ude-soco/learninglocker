@@ -13,9 +13,9 @@ spec:
         - name: MODELS_REPO
           value: mongo
         - name: MONGO_URL
-          value: mongodb://$(MONGO_SERVICE):27017/learninglocker_v2
+          value: mongodb://$(LEARNINGLOCKER_MONGO_SERVICE):27017/learninglocker_v2
         - name: REDIS_URL
-          value: redis://$(REDIS_SERVICE):6379/0
+          value: redis://$(LEARNINGLOCKER_REDIS_SERVICE):6379/0
         - name: EXPRESS_PORT
           value: "8081"
         - name: FS_LOCAL_STORAGE_DIR
