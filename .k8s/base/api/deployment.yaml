@@ -12,9 +12,9 @@ spec:
         args: [migrations]
         envFrom:
         - configMapRef:
-            name: config
+            name: learninglocker-config
         - secretRef:
-            name: secret
+            name: learninglocker-secret
         env:
         - name: MONGO_HOST
           value: $(LEARNINGLOCKER_MONGO_SERVICE)
@@ -24,9 +24,9 @@ spec:
         args: [seeds]
         envFrom:
         - configMapRef:
-            name: config
+            name: learninglocker-config
         - secretRef:
-            name: secret
+            name: learninglocker-secret
         env:
         - name: MONGO_HOST
           value: $(LEARNINGLOCKER_MONGO_SERVICE)
@@ -37,9 +37,9 @@ spec:
         args: [api]
         envFrom:
         - configMapRef:
-            name: config
+            name: learninglocker-config
         - secretRef:
-            name: secret
+            name: learninglocker-secret
         env:
         - name: PATH_PREFIX
           value: "/api"

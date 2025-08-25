@@ -13,9 +13,9 @@ spec:
         - worker
         envFrom:
         - configMapRef:
-            name: config
+            name: learninglocker-config
         - secretRef:
-            name: secret
+            name: learninglocker-secret
         env:
         - name: REDIS_HOST
           value: $(LEARNINGLOCKER_REDIS_SERVICE)
