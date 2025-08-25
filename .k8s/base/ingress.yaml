@@ -1,7 +1,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: web
+  name: learninglocker
   annotations:
     kubernetes.io/tls-acme: "true"
     cert-manager.io/cluster-issuer: letsencrypt-prod
@@ -35,4 +35,4 @@ spec:
   tls:
   - hosts:
     - $(LEARNINGLOCKER_FQDN)
-    secretName: web-tls-crt
+    secretName: learninglocker-tls-crt
