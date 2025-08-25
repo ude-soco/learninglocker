@@ -31,20 +31,20 @@ configMapGenerator:
   - UI_PORT=3000
   - API_HOST=api
   - API_PORT=8080
-  - SITE_URL=http://example.org
-  - SMTP_HOST=""
-  - SMTP_PORT=""
-  - SMTP_SECURED=""
-  - SMTP_USER=""
-  - LL_ADMIN_EMAIL=""
-  - LL_ADMIN_ORG=""
+  # - SITE_URL=http://example.org
+  # - SMTP_HOST=""
+  # - SMTP_PORT=""
+  # - SMTP_SECURED=""
+  # - SMTP_USER=""
 
 secretGenerator:
 - name: learninglocker-secret
-  literals:
-  - APP_SECRET="i-am-not-secure-please-change-me"
-  - SMTP_PASS=""
-  - LL_ADMIN_PASSWORD=""
+  literals: []
+  # - APP_SECRET="i-am-not-secure-please-change-me"
+  # - SMTP_PASS=""
+  # - LL_ADMIN_EMAIL=""
+  # - LL_ADMIN_ORG=""
+  # - LL_ADMIN_PASSWORD=""
 
 vars:
 - name: LEARNINGLOCKER_FQDN
