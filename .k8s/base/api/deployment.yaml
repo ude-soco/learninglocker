@@ -52,8 +52,5 @@ spec:
           protocol: TCP
         livenessProbe:
           httpGet:
-            path: /
+            path: /api/
             port: 8080
-          initialDelaySeconds: 5
-          periodSeconds: 15
-          timeoutSeconds: 3
