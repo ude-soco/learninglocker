@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: xapi-service
+spec:
+  replicas: 1
+  template:
+    spec:
+      containers:
+      - name: xapi-service
+        image: xapi-service
+        env:
+        - name: MODELS_REPO
+          value: mongo
+        - name: MONGO_URL
+          value: mongodb://$(LEARNINGLOCKER_MONGO_SERVICE):27017/learninglocker_v2
+        - name: REDIS_URL
+          value: redis://$(LEARNINGLOCKER_REDIS_SERVICE):6379/0
+        - name: EXPRESS_PORT
+          value: "8081"
+        - name: FS_LOCAL_STORAGE_DIR
+          value: /var/xapi-service
+        - name: WINSTON_CONSOLE_LEVEL
+          value: error
+        - name: XAPI_PREFIX
+          value: /data
+        ports:
+        - containerPort: 8081
+          protocol: TCP
+        livenessProbe:
+          httpGet:
+            path: /data/xAPI/about
+            port: 8081
+          initialDelaySeconds: 15
+          periodSeconds: 30
+        volumeMounts:
+        - mountPath: /var/xapi-service
+          name: xapi-service
+      volumes:
+      - name: xapi-service
+        persistentVolumeClaim:
+          claimName: xapi-service

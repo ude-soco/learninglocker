@@ -1,0 +1,20 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+labels:
+- pairs:
+    service: redis
+  includeSelectors: true
+  includeTemplates: true
+
+resources:
+- deployment.yaml
+- pvc.yaml
+- service.yaml
+
+vars:
+- name: LEARNINGLOCKER_REDIS_SERVICE
+  objref:
+    apiVersion: v1
+    kind: Service
+    name: redis

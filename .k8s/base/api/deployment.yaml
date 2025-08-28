@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api
+spec:
+  replicas: 1
+  template:
+    spec:
+      initContainers:
+      - name: migrations
+        image: learninglocker
+        args: [migrations]
+        envFrom:
+        - configMapRef:
+            name: learninglocker-config
+        - secretRef:
+            name: learninglocker-secret
+        env:
+        - name: MONGO_HOST
+          value: $(LEARNINGLOCKER_MONGO_SERVICE)
+
+      - name: seeds
+        image: learninglocker
+        args: [seeds]
+        envFrom:
+        - configMapRef:
+            name: learninglocker-config
+        - secretRef:
+            name: learninglocker-secret
+        env:
+        - name: MONGO_HOST
+          value: $(LEARNINGLOCKER_MONGO_SERVICE)
+
+      containers:
+      - name: api
+        image: learninglocker
+        args: [api]
+        envFrom:
+        - configMapRef:
+            name: learninglocker-config
+        - secretRef:
+            name: learninglocker-secret
+        env:
+        - name: PATH_PREFIX
+          value: "/api"
+        - name: REDIS_HOST
+          value: $(LEARNINGLOCKER_REDIS_SERVICE)
+        - name: MONGO_HOST
+          value: $(LEARNINGLOCKER_MONGO_SERVICE)
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        livenessProbe:
+          httpGet:
+            path: /api/
+            port: 8080
