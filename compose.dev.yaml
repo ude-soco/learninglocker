@@ -1,0 +1,167 @@
+name: learninglocker
+
+# Development stack.
+#
+#   docker compose -f compose.dev.yaml up -d --build   # build & start everything
+#   docker compose -f compose.dev.yaml up --watch       # live-reload on source changes
+#   docker compose -f compose.dev.yaml logs -f api ui
+#   docker compose -f compose.dev.yaml down             # stop (keeps data volumes)
+#
+# Host port mapping (everything is published for local tooling/debugging):
+#   UI    -> http://localhost:3000
+#   API   -> http://localhost:8080
+#   xAPI  -> http://localhost:8081
+#   Mongo -> mongodb://localhost:27018   (published on 27018, NOT the default 27017)
+#   Redis -> redis://localhost:6379
+
+x-common: &common
+  build: .
+  image: ${IMAGE_NAME_PREFIX:-ghcr.io/ude-soco/}learninglocker:${IMAGE_TAG:-latest}
+  develop:
+    watch:
+    - path: package.json
+      action: rebuild
+    - path: Dockerfile
+      action: rebuild
+    - path: /lib
+      action: rebuild
+  environment:
+    NODE_ENV: development
+    QUEUE_PROVIDER: REDIS
+    REDIS_HOST: redis
+    MONGO_HOST: mongo
+    MONGO_DATABASE: learninglocker_v2
+    UI_HOST: ui
+    UI_PORT: 3000
+    API_HOST: api
+    API_PORT: 8080
+    SITE_URL: http://127.0.0.1
+    LOG_MIN_LEVEL: info
+    APP_SECRET: "i-am-not-secure-please-change-me"
+    LL_ADMIN_EMAIL: "admin@mail.com"
+    LL_ADMIN_ORG: "soco"
+    LL_ADMIN_PASSWORD: "1234qweR"
+
+services:
+  ui:
+    <<: *common
+    command: ui
+    ports: ["3000:3000"]
+    depends_on:
+      api:
+        condition: service_healthy
+    develop:
+      watch:
+      - path: /ui
+        action: rebuild
+
+  api:
+    <<: *common
+    command: api
+    ports: ["8080:8080"]
+    healthcheck:
+      test: [CMD, node, -e, "'fetch(`http://localhost:8080/`).then(x=>x.status==200?process.exit(0):process.exit(1)).catch(()=>process.exit(1))'"]
+      start_period: 10s
+      interval: 10s
+    depends_on:
+      mongo:
+        condition: service_healthy
+        restart: true
+      seeds:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+        restart: true
+    develop:
+      watch:
+      - path: /api
+        action: rebuild
+
+  worker:
+    <<: *common
+    command: worker
+    depends_on:
+      mongo:
+        condition: service_healthy
+        restart: true
+      redis:
+        condition: service_healthy
+        restart: true
+    develop:
+      watch:
+      - path: /worker
+        action: rebuild
+
+  cli:
+    <<: *common
+    profiles: [halted]
+    command: cli
+    tty: true
+    develop:
+      watch:
+      - path: /cli
+        action: rebuild
+
+  seeds:
+    <<: *common
+    command: seeds
+    depends_on:
+      migrations:
+        condition: service_completed_successfully
+    restart: on-failure
+
+  migrations:
+    <<: *common
+    command: migrations
+    depends_on:
+      mongo:
+        condition: service_healthy
+        restart: true
+    restart: on-failure
+
+  mongo:
+    image: mongo:4.4
+    command: mongod --wiredTigerCacheSizeGB 0.25 --quiet --logpath /dev/null
+    ports: ["27018:27017"]   # published on 27018 to avoid clashing with a local Mongo on 27017
+    volumes:
+    - mongo:/data/db
+    healthcheck:
+      test: "mongo --nodb --eval 'disableTelemetry()'; echo 'db.runCommand({ping: 1}).ok' | mongo localhost:27017/test --quiet"
+      start_period: 2s
+      interval: 10s
+
+  redis:
+    image: redis:7
+    command: --loglevel warning
+    volumes:
+    - redis:/data
+    ports: ["6379:6379"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      start_period: 2s
+      interval: 10s
+
+  xapi-service:
+    image: learninglocker/xapi-service
+    platform: linux/amd64
+    ports: ["8081:8081"]
+    depends_on:
+      mongo:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+    - xapi-service:/var/xapi-service
+    environment:
+      MODELS_REPO: mongo
+      MONGO_URL: mongodb://mongo:27017/learninglocker_v2
+      REDIS_URL: redis://redis:6379/0
+      EXPRESS_PORT: 8081
+      FS_LOCAL_STORAGE_DIR: /var/xapi-service
+      WINSTON_CONSOLE_LEVEL: error
+      XAPI_PREFIX: /data
+
+volumes:
+  mongo:
+  redis:
+  xapi-service:
